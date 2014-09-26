@@ -5,14 +5,14 @@
  */
 package ch.reboundsoft.shinobi.authstore;
 
+import ch.reboundsoft.shinobi.authstore.secman.ShinobiSecurityManager;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.HashMap;
+import ninja.cache.NinjaCache;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.config.IniSecurityManagerFactory;
-import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,30 +21,28 @@ import org.slf4j.LoggerFactory;
  * @author rmaire
  */
 @Singleton
-public class IniAuthStoreImpl implements AuthStore {
+public class CachedAuthStoreImpl implements AuthStore {
 
     private static final transient Logger log = LoggerFactory.getLogger(AuthStore.class);
 
+    private static final String subjectKey = "shinobi.subjects";
+    private static final String subjectAuthKey = "authenticated";
+
     private final HashMap<String, Subject> subjects;
 
-    private final Factory<SecurityManager> factory;
+    @Inject
+    NinjaCache cache;
 
-    //@Inject
-    private final SecurityManager securityManager;
-    
-    public IniAuthStoreImpl() {
+    @Inject
+    public CachedAuthStoreImpl(ShinobiSecurityManager securityManager) {
         this.subjects = new HashMap<>();
-        factory = new IniSecurityManagerFactory("classpath:shiro.ini");
-        securityManager = factory.getInstance();
-        SecurityUtils.setSecurityManager(securityManager);
+        SecurityUtils.setSecurityManager(securityManager.getSecurityManager());
     }
 
     @Override
     public synchronized boolean login(String name, String password) {
 
-        log.info("Start login");
-        
-        log.info("Login using ini auth store");
+        log.info("Login using cached auth store");
 
         Subject currentUser;
 
@@ -75,6 +73,8 @@ public class IniAuthStoreImpl implements AuthStore {
                 return false;
             }
         }
+        
+        cache.add(getCacheKey(name), password);
 
         return true;
 
@@ -83,18 +83,42 @@ public class IniAuthStoreImpl implements AuthStore {
     @Override
     public synchronized boolean logout(String name) {
         subjects.get(name).logout();
+        cache.delete(getCacheKey(name));
         subjects.remove(name);
         return true;
     }
 
     @Override
     public synchronized boolean hasRole(String name, String role) {
-        return subjects.get(name) != null && subjects.get(name).hasRole(role);
+        if(cache.get(getCacheKey(name))!= null && subjects.get(name) == null) {
+            if(!login(name, (String) cache.get(getCacheKey(name)))){ 
+                return false;
+            }
+        }
+        return subjects.get(name).hasRole(role);
     }
 
     @Override
     public synchronized boolean isPermitted(String name, String permission) {
-        return subjects.get(name) != null && subjects.get(name).isPermitted(permission);
+        if(cache.get(getCacheKey(name))!= null && subjects.get(name) == null) {
+            if(!login(name, (String) cache.get(getCacheKey(name)))){ 
+                return false;
+            }
+        }
+        return subjects.get(name).isPermitted(permission);
     }
 
+    @Override
+    public boolean isAuthenticated(String name) {
+        if(cache.get(getCacheKey(name))!= null && subjects.get(name) == null) {
+            if(!login(name, (String) cache.get(getCacheKey(name)))){ 
+                return false;
+            }
+        }
+        return subjects.get(name).isAuthenticated();
+    }
+
+    public static String getCacheKey(String name) {
+        return subjectKey+"."+name+"."+subjectAuthKey;
+    }
 }

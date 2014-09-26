@@ -16,5 +16,6 @@ public interface AuthStore {
     public boolean logout(String name);    
     public boolean hasRole(String name, String role);    
     public boolean isPermitted(String name, String permission);
+    public boolean isAuthenticated(String name);
     
 }

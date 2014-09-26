@@ -89,4 +89,9 @@ public class DefaultAuthStoreImpl implements AuthStore {
         return subjects.get(name) != null && subjects.get(name).isPermitted(permission);
     }
 
+    @Override
+    public boolean isAuthenticated(String name) {
+        return subjects.get(name).isAuthenticated();
+    }
+
 }
