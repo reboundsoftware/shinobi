@@ -16,6 +16,16 @@
         <jetty.version>9.2.1.v20140609</jetty.version>
         <bonecp.version>0.8.0.RELEASE</bonecp.version>
     </properties>
+    <distributionManagement>
+        <repository>
+            <id>repo</id>
+            <url>https://github.com/reboundsoftware/reboundsoftware-repo/tree/master/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot-repo</id>
+            <url>https://github.com/reboundsoftware/reboundsoftware-repo/tree/master/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <build>
         <plugins>
             <plugin>

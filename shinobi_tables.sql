@@ -25,6 +25,7 @@ CREATE TABLE USERS
     id INTEGER NOT NULL,
     user_name VARCHAR(255) NOT NULL, 
     password VARCHAR(255) NOT NULL, 
+    logged_in integer,
     PRIMARY KEY (id)
 );
 

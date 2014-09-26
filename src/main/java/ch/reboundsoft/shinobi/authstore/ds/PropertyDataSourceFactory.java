@@ -26,13 +26,14 @@ public class PropertyDataSourceFactory implements RealmDataSource {
         try {
             Class.forName(ninjaProperties.get("shinobi.db.driver"));
         } catch (ClassNotFoundException ex) {
+            log.error("Driver not found: "+ ninjaProperties.get("shinobi.db.driver"));
             log.error(ex.toString());
         }
 
         ds = new BoneCPDataSource();
-        ds.setJdbcUrl(ninjaProperties.get("shinobi.db.url"));
-        ds.setUsername(ninjaProperties.get("shinobi.db.name"));
-        ds.setPassword(ninjaProperties.get("shinobi.db.password"));
+        ds.setJdbcUrl(ninjaProperties.get("db.connection.url"));
+        ds.setUsername(ninjaProperties.get("db.connection.username"));
+        ds.setPassword(ninjaProperties.get("db.connection.password"));
     }
 
     @Override

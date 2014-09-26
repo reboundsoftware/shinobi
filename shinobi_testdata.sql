@@ -2,11 +2,11 @@ INSERT INTO PERMISSIONS(id, permission_name, description) VALUES(1, '*', 'Wildca
 INSERT INTO PERMISSIONS(id, permission_name, description) VALUES(2, 'lightsaber:*', 'Everything with a lightsaber');
 INSERT INTO PERMISSIONS(id, permission_name, description) VALUES(3, 'winnebago:drive:eagle5', 'allowed to drive the winnebago with plate eagle5');
 
-INSERT INTO USERS (id, user_name, password) VALUES(1, 'root', 'secret');
-INSERT INTO USERS (id, user_name, password) VALUES(2, 'guest', 'guest');
-INSERT INTO USERS (id, user_name, password) VALUES(3, 'presidentskroob', '12345');
-INSERT INTO USERS (id, user_name, password) VALUES(4, 'darkhelmet', 'ludicrousspeed');
-INSERT INTO USERS (id, user_name, password) VALUES(5, 'lonestarr', 'vespa');
+INSERT INTO USERS (id, user_name, password, logged_in) VALUES(1, 'root', 'secret', 0);
+INSERT INTO USERS (id, user_name, password, logged_in) VALUES(2, 'guest', 'guest', 0);
+INSERT INTO USERS (id, user_name, password, logged_in) VALUES(3, 'presidentskroob', '12345', 0);
+INSERT INTO USERS (id, user_name, password, logged_in) VALUES(4, 'darkhelmet', 'ludicrousspeed',0 );
+INSERT INTO USERS (id, user_name, password, logged_in) VALUES(5, 'lonestarr', 'vespa', 0);
 
 INSERT INTO ROLES (id, role_name, description) VALUES(1, 'admin', 'role has all permissions, indicated by the wildcard "*"');
 INSERT INTO ROLES (id, role_name, description) VALUES(2, 'schwartz', 'The "schwartz" role can do anything (*) with any lightsaber');
